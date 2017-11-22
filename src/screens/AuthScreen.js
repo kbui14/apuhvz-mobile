@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, Children } from 'react';
 import { View, Text, TouchableWithoutFeedback, StatusBar, Image } from 'react-native';
 import firebase from 'firebase';
 import {
@@ -263,9 +263,8 @@ const styles = {
   },
   logoContainer: {
     alignItems: 'center',
-    flexWrap: 'wrap',
     justifyContent: 'center',
-    padding: 100
+    padding: 100,
   },
   logo:{
     width: 250,
