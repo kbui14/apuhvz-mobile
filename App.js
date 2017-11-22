@@ -14,6 +14,7 @@ import {
   DrawerNavigator,
   DrawerItems
 } from "react-navigation";
+import ResponsiveImage from 'react-native-responsive-image';
 import { Divider } from "react-native-elements";
 import { Provider } from "react-redux";
 import firebase from "firebase";
@@ -83,13 +84,13 @@ export default class App extends React.Component {
             flex: 1,
             backgroundColor: PRIMARY_COLOR,
             alignItems: "center",
-            alignContent: "center"
+            alignContent: "center",
           }}
         >
-          <Image
-            style={{ width: 150, height: 150 }}
-            source={require("./assets/logo.png")}
-          />
+        <Image
+          style={styles.logo}
+          source={require('./assets/logo.png')}
+        />
         </View>
 
         <View>
@@ -158,5 +159,9 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     //marginTop: 25
     marginTop: Platform.OS === "android" ? 24 : 0
+  },
+  logo:{
+    width: 250,
+    height: 120
   }
 });
