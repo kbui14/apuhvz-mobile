@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, Text, TouchableWithoutFeedback } from 'react-native';
+import { View, Text, TouchableWithoutFeedback, StatusBar, Image } from 'react-native';
 import firebase from 'firebase';
 import {
   FormLabel,
@@ -12,7 +12,8 @@ import { connect } from 'react-redux';
 import * as actions from '../actions';
 import { Spinner } from '../components/Spinner';
 
-import { PRIMARY_COLOR } from '../constants/style';
+import { PRIMARY_COLOR, SEAFOAM_COLOR, GREEN, LIGHT_GREEN, DARK_GREEN } from '../constants/style';
+import { style } from 'expo/src/Font';
 
 // Purpose of this auth screen is just to call action creator
 class AuthScreen extends Component {
@@ -90,10 +91,13 @@ class AuthScreen extends Component {
   };
 
   //////////////////////////////////////////////////////////////////////////////////
-  // Login user via username/password
+  // Redirect user to sign up page & creates user auth via username/password
   onStandardSignupButtonPress = () => {
-    const { email, password, passwordRetype } = this.props;
-    this.props.signupUser(email, password, passwordRetype);
+    
+    this.props.navigation.navigate('sign');
+    // Uncomment this when we are ready to create user through sign up page.
+    //const { email, password, passwordRetype } = this.props;
+    //this.props.signupUser(email, password, passwordRetype);
   };
 
   //////////////////////////////////////////////////////////////////////////////////
@@ -117,7 +121,7 @@ class AuthScreen extends Component {
           />
 
           <View style={styles.detailWrapperStyle}>
-            <Text style={{ textAlign: 'center' }}>Already have an account?&nbsp;</Text>
+            <Text style={{ textAlign: 'center', color: 'white' }}>Already have an account?&nbsp;</Text>
             <TouchableWithoutFeedback onPress={this.onSignupLoginToggle}>
               <View>
                 <Text style={{ color: 'blue', textDecorationLine: 'underline' }}>Log In</Text>
@@ -137,7 +141,7 @@ class AuthScreen extends Component {
         />
 
         <View style={styles.detailWrapperStyle}>
-          <Text style={{ textAlign: 'center' }}>Don't have an account?&nbsp;</Text>
+          <Text style={{ textAlign: 'center', color: 'white' }}>Don't have an account?&nbsp;</Text>
           <TouchableWithoutFeedback onPress={this.onSignupLoginToggle}>
             <View>
               <Text style={{ color: 'blue', textDecorationLine: 'underline' }}>Sign Up</Text>
@@ -154,12 +158,14 @@ class AuthScreen extends Component {
     if (this.state.inSignupMode) {
       return (
         <View style={{ marginBottom: 10 }}>
-          <FormLabel>Retype Password</FormLabel>
+          <FormLabel labelStyle={{color: DARK_GREEN}}>Retype Password</FormLabel>
           <FormInput
             placeholder="p@ssw0rd"
+            placeholderTextColor={SEAFOAM_COLOR}
             secureTextEntry
             value={this.props.passwordRetype}
             onChangeText={this.onPasswordRetypeChange}
+            style={styles.textInputStyle}            
           />
         </View>
       );
@@ -181,23 +187,39 @@ class AuthScreen extends Component {
       return <Spinner size="large" message="Authenticating..." />;
     }
     return (
-      <View>
+      <View style={styles.backgroundStyle}>
+
+        <StatusBar
+          barStyle='light-content'
+        />
+              
+         <View style={styles.logoContainer}>
+          <Image
+            style={style.logoStyle}
+            source={require('../../assets/logo.png')}
+          />
+         </View>     
+
         <View style={{ marginBottom: 10 }}>
-          <FormLabel>E-mail</FormLabel>
+          <FormLabel labelStyle={{color: DARK_GREEN}}>E-mail</FormLabel>
           <FormInput
-            placeholder="jon@email.com"
+            placeholder="username@apu.edu"
+            placeholderTextColor={SEAFOAM_COLOR}
             value={this.props.email}
             onChangeText={this.onEmailChange}
+            style={styles.textInputStyle}
           />
         </View>
 
         <View style={{ marginBottom: 10 }}>
-          <FormLabel>Password</FormLabel>
+          <FormLabel labelStyle={{color: DARK_GREEN}}>Password</FormLabel>
           <FormInput
             placeholder="p@ssw0rd"
+            placeholderTextColor={SEAFOAM_COLOR}
             secureTextEntry
             value={this.props.password}
             onChangeText={this.onPasswordChange}
+            style={styles.textInputStyle}
           />
         </View>
 
@@ -233,6 +255,23 @@ const styles = {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center'
+  },
+  backgroundStyle: {
+    height: 5000,
+    backgroundColor: 'black'
+  },
+  logoContainer: {
+    alignItems: 'center',
+    flexWrap: 'wrap',
+    justifyContent: 'center',
+    padding: 100
+  },
+  logoStyle: {
+    width: 250,
+    height: 120
+  },
+  textInputStyle: {
+    color: 'white'
   }
 };
 

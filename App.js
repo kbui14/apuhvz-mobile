@@ -24,6 +24,7 @@ import SearchResultsScreen from "./src/screens/SearchResultsScreen";
 import VendorScreen from "./src/screens/VendorScreen";
 import WelcomeScreen from "./src/screens/WelcomeScreen";
 import AuthScreen from "./src/screens/AuthScreen";
+import AdditionalSignUpScreen from "./src/screens/AdditionalSignUpScreen";
 import SignoutScreen from "./src/screens/SignoutScreen";
 
 import { GOOGLE_FIREBASE_CONFIG } from "./src/constants/api_keys";
@@ -122,6 +123,7 @@ export default class App extends React.Component {
       {
         welcome: { screen: WelcomeScreen },
         auth: { screen: AuthScreen },
+        sign: { screen: AdditionalSignUpScreen },
         main: { screen: MainDrawer }
       },
       {
