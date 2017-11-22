@@ -193,12 +193,12 @@ class AuthScreen extends Component {
           barStyle='light-content'
         />
               
-         <View style={styles.logoContainer}>
+        <View style={styles.logoContainer}>
           <Image
-            style={style.logoStyle}
+            style={styles.logo}
             source={require('../../assets/logo.png')}
           />
-         </View>     
+        </View>    
 
         <View style={{ marginBottom: 10 }}>
           <FormLabel labelStyle={{color: DARK_GREEN}}>E-mail</FormLabel>
@@ -257,7 +257,8 @@ const styles = {
     alignItems: 'center'
   },
   backgroundStyle: {
-    height: 5000,
+    alignSelf: 'stretch',
+    flexDirection: 'column',
     backgroundColor: 'black'
   },
   logoContainer: {
@@ -266,7 +267,7 @@ const styles = {
     justifyContent: 'center',
     padding: 100
   },
-  logoStyle: {
+  logo:{
     width: 250,
     height: 120
   },
