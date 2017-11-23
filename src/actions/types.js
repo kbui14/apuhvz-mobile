@@ -17,3 +17,7 @@ export const AUTH_USER_FAIL = "signup_or_login_user_fail";
 export const AUTH_SIGNOUT_USER = "signout_user";
 
 export const RESET_APP_STATE = "reset_app_state";
+
+export const SIGNUP_LIVINGAREA_CHANGED = "livingarea_changed";
+export const SIGNUP_FNAME_CHANGED = 'fname_changed';
+export const SIGNUP_LNAME_CHANGED = 'lname_changed';

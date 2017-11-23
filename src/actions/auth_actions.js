@@ -12,7 +12,10 @@ import {
   AUTH_USER_FAIL,
   AUTH_USER_ATTEMPT,
   RESET_APP_STATE,
-  RESET_SIGNUP_LOGIN_PAGES
+  RESET_SIGNUP_LOGIN_PAGES,
+  SIGNUP_LIVINGAREA_CHANGED,
+  SIGNUP_FNAME_CHANGED,
+  SIGNUP_LNAME_CHANGED
 } from './types.js';
 
 ////////////////////////////////////////////////////////////////
@@ -120,83 +123,26 @@ const loginUserFail = (dispatch, error = '') => {
 
 ////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////
-///////////////////FACEBOOK LOGIN METHODS///////////////////////
+///////////////////SIGN UP METHODS//////////////////////////////
 ////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////
-// Checks to see if we already have a facebook token; if so, pass
-// it to the reducer; if not, attempt to login.
-export const facebookLogin = () => async dispatch => {
-  try {
-    // Dispatch event to trigger loading spinner
-    dispatch({ type: AUTH_USER_ATTEMPT });
 
-    // Get item out of device storage; it will take time, so wait
-    // for it to complete; after we receive, assign to variable token
-    //const token = await AsyncStorage.getItem('fb_token');
-    const token = await SecureStore.getItemAsync('fb_token');
 
-    // Can now pretend it was synchronous call
-    if (token) {
-      console.log(`FB Token exists: ${token}`);
-      await loginWithFacebookToken(token, dispatch);
+export const userUpdate = ({ prop, value }) => ({
+  type: SIGNUP_LIVINGAREA_CHANGED,
+  payload: {prop, value}
+});
 
-      // Dispatch an action saying FB login is done
-      dispatch({ type: FACEBOOK_LOGIN_SUCCESS, payload: token });
-    } else {
-      // Start up FB login process
-      doFacebookLogin(dispatch);
-    }
-  } catch (err) {
-    console.error(err);
-  }
-};
+export const fNameChanged = text => ({
+  type: SIGNUP_FNAME_CHANGED,
+  payload: text
+});
 
-////////////////////////////////////////////////////////////////
-// Helper function (not an action creator) -
-const doFacebookLogin = async dispatch => {
-  try {
-    // This line will popup a modal where user can login to FB
-    // Result contains type property (status) and token property - so destructure b/c
-    // that's all we care about
-    const { type, token } = await Facebook.logInWithReadPermissionsAsync(FACEBOOK_API_KEY, {
-      permissions: ['public_profile', 'email'] // Asking for FB permissions
-    });
-
-    if (type === 'cancel') {
-      return dispatch({
-        type: FACEBOOK_LOGIN_FAIL,
-        payload: 'Facebook login cancelled/failed'
-      });
-    }
-
-    await loginWithFacebookToken(token, dispatch);
-  } catch (err) {
-    console.error(err);
-  }
-};
-
-////////////////////////////////////////////////////////////////
-// Login to Firebase w/ Facebook Token
-const loginWithFacebookToken = async (token, dispatch) => {
-  try {
-    // Build Firebase credential with the Facebook access token
-    const credential = firebase.auth.FacebookAuthProvider.credential(token);
-
-    // Sign in w/ credential from the Facebook user
-    await firebase.auth().signInWithCredential(credential);
-
-    // Save token onto device memory and dispatch action
-    //await AsyncStorage.setItem('fb_token', token);
-    await SecureStore.setItemAsync('fb_token', token); // Encrypts before storing!
-    dispatch({ type: FACEBOOK_LOGIN_SUCCESS, payload: token });
-  } catch (err) {
-    //await AsyncStorage.removeItem('fb_token'); // Remove if exists
-    await SecureStore.deleteItemAsync('fb_token');
-    console.error(err);
-    return dispatch({ type: FACEBOOK_LOGIN_FAIL, payload: 'Facebook login cancelled/failed' });
-  }
-};
+export const lNameChanged = text => ({
+  type: SIGNUP_LNAME_CHANGED,
+  payload: text
+})
 
 ////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////

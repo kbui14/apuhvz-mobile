@@ -6,20 +6,38 @@ import {
   StatusBar, 
   Image, 
   Picker, 
-  PickerIOS,
-  Platform
+  Platform,
+  TouchableWithoutFeedback,
+  ScrollView
  } from 'react-native';
-import { Button } from 'react-native-elements'; // Using the Button that Grissom used from this library.
+import { Button, FormValidationMessage, FormLabel, FormInput } from 'react-native-elements'; // Using the Button that Grissom used from this library.
 import { Card, CardSection, Input, Spinner } from '../components';
 import { connect } from 'react-redux';
 import * as actions from '../actions';
 import { PRIMARY_COLOR } from '../actions/types';
+import { SEAFOAM_COLOR, DARK_GREEN } from '../constants/style';
 
 class AdditionalSignUpScreen extends Component {
 
       onButtonPressFinish() {
         this.props.finishSignup();
       }
+
+      //////////////////////////////////////////////////////////////////////////////////
+      // Update the property when changed
+      onLivingAreaChange = (prop, value) => {
+        this.props.userUpdate(prop, value);
+        this.setState({prop: value})
+        console.log(value);        
+      };
+
+      onFirstNameChange = text =>{
+        this.props.fNameChanged(text);
+      };
+
+      onLastNameChange = text =>{
+        this.props.lNameChanged(text);
+      };
     
       renderButton() {
         if (this.props.loading) {
@@ -27,13 +45,13 @@ class AdditionalSignUpScreen extends Component {
         }
         return (
           <View>
-            <Button                                           // This is a possible issue because it is not appearing the same way the Auth Screen buttons do.
-              title="Finish"              
-              //icon={{ name: 'vpn-key' }}
-              backgroundColor={PRIMARY_COLOR}
-              //onPress={this.onStandardSignupButtonPress}
-            />
-          </View>
+          <Button
+            title="Finish"
+            //icon={{ name: 'vpn-key' }}
+            backgroundColor={PRIMARY_COLOR}
+            //onPress={this.onStandardSignupButtonPress}
+          />
+        </View>
     
       );
     }
@@ -60,6 +78,7 @@ class AdditionalSignUpScreen extends Component {
     
       render() {
         return (
+          <ScrollView>
           <View style={styles.backgroundContainer}>
             
             <StatusBar
@@ -72,41 +91,66 @@ class AdditionalSignUpScreen extends Component {
                 source={require('../../assets/logo.png')}
                 />
             </View>
-    
-            <Card>
 
-        <CardSection style={{ flexDirection: 'column' }}>
+            <View style={{ marginBottom: 10 }}>
+              <FormLabel labelStyle={{color: DARK_GREEN}}>First Name</FormLabel>
+                <FormInput
+                  placeholder="First Name"
+                  placeholderTextColor={SEAFOAM_COLOR}
+                  value={this.props.fname}
+                  onChangeText={this.onFirstNameChange}
+                  style={styles.textInputStyle}
+                  />
+            </View>
+
+            <View style={{ marginBottom: 10 }}>
+              <FormLabel labelStyle={{color: DARK_GREEN}}>Last Name</FormLabel>
+                <FormInput
+                  placeholder="Last Name"
+                  placeholderTextColor={SEAFOAM_COLOR}
+                  value={this.props.lname} //
+                  onChangeText={this.onLastNameChange} //
+                  style={styles.textInputStyle}
+                />
+            </View>
+    
+
           <Text style={styles.pickerTextStyle}>Living Area</Text>
         
           
 
-          {/* This is the Picker for Living Areas. The issue with this is that it does not change colors nor does it stay fit above the Finish Button which may be a flex issue.
+          {/* This is the Picker for Living Areas.
+              Issue: It does not change values
 
-            <PickerIOS
-            style={{ flex: 1}}
-            selectedValue={this.props.shift}
-            onValueChange={value => this.props.AdditionalSignUpScreen({ prop: 'Living area', value })}
-          >
-            <PickerIOS.Item label="Adams" value="Adams" />
-            <PickerIOS.Item label="Engstrom" value="Engstrom" />
-            <PickerIOS.Item label="Smith" value="Smith" />
-            <PickerIOS.Item label="Trinity" value="Trinity" />
-            <PickerIOS.Item label="Alosta" value="Alosta" />
-            <PickerIOS.Item label="Bowles" value="Bowles" />
-            <PickerIOS.Item label="Shire Mods" value="Shire Mods" />
-            <PickerIOS.Item label="University Park" value="University Park" />
-            <PickerIOS.Item label="University Village" value="University Village" />
-          </PickerIOS>
+              Update: I was able to fix the issue, but it is not usind redux...
           */}
-        </CardSection>
-    
+
+            <Picker
+              style={{ flex: 1 }}
+              selectedValue={this.state && this.state.pickerValue}
+              onValueChange={(value) => this.setState({pickerValue: value})}
+              itemStyle={{color: 'white'}}
+            >
+              <Picker.Item label="Adams" value="Adams" />
+              <Picker.Item label="Engstrom" value="Engstrom" />
+              <Picker.Item label="Smith" value="Smith" />
+              <Picker.Item label="Trinity" value="Trinity" />
+              <Picker.Item label="Alosta" value="Alosta" />
+              <Picker.Item label="Bowles" value="Bowles" />
+              <Picker.Item label="Shire Mods" value="Shire Mods" />
+              <Picker.Item label="University Park" value="University Park" />
+              <Picker.Item label="University Village" value="University Village" />
+            </Picker>
+            
+
+
+        <FormValidationMessage containerStyle={{ marginBottom: 10 }}>
               {this.renderError()}
+        </FormValidationMessage>
     
-              <CardSection style={styles.cardContainer}>
                 {this.renderButton()}
-              </CardSection>
-            </Card>
           </View>
+          </ScrollView>
         );
       }
     }
@@ -127,33 +171,41 @@ class AdditionalSignUpScreen extends Component {
         alignItems: 'center',
         justifyContent: 'center',
         marginVertical: 2
-    },
-    buttonContainer: {
-        flex: 1,
-        flexDirection: 'row'
       },
-    logoContainer: {
-      alignItems: 'center',
-      flexWrap: 'wrap',
-      justifyContent: 'center',
-      padding: 100
-    },
-    logo:{
-      width: 250,
-      height: 120
-    },
-    cardContainer: {
-      borderBottomWidth: 0,
-      paddingTop: 25
-    },
-    inputStyle: {
-      color: 'white',
-      paddingRight: 5,
-      paddingLeft: 5,
-      fontSize: 18,
-      lineHeight: 23,
-      flex: 2
-    }
+      buttonContainer: {
+          flex: 1,
+          flexDirection: 'row'
+        },
+      logoContainer: {
+        alignItems: 'center',
+        flexWrap: 'wrap',
+        justifyContent: 'center',
+        padding: 100
+      },
+      logo:{
+        width: 250,
+        height: 120
+      },
+      cardContainer: {
+        borderBottomWidth: 0,
+        paddingTop: 25
+      },
+      inputStyle: {
+        color: 'white',
+        paddingRight: 5,
+        paddingLeft: 5,
+        fontSize: 18,
+        lineHeight: 23,
+        flex: 2
+      },
+      pickerTextStyle: {
+        fontSize: 18,
+        paddingLeft: 20,
+        color: DARK_GREEN
+      },
+      textInputStyle: {
+        color: 'white'
+      }
     });
 
     function mapStateToProps({ auth }) {
@@ -162,7 +214,8 @@ class AdditionalSignUpScreen extends Component {
         password: auth.password,
         passwordRetype: auth.passwordRetype,
         error: auth.error,
-        loading: auth.loading
+        loading: auth.loading,
+        livingArea: auth.livingArea
       };
     }
     
