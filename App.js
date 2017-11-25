@@ -14,7 +14,6 @@ import {
   DrawerNavigator,
   DrawerItems
 } from "react-navigation";
-import ResponsiveImage from 'react-native-responsive-image';
 import { Divider } from "react-native-elements";
 import { Provider } from "react-redux";
 import firebase from "firebase";
