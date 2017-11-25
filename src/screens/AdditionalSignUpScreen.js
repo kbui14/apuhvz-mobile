@@ -8,16 +8,140 @@ import {
   Picker, 
   Platform,
   TouchableWithoutFeedback,
-  ScrollView
+  ScrollView,
+  Switch
  } from 'react-native';
 import { Button, FormValidationMessage, FormLabel, FormInput } from 'react-native-elements'; // Using the Button that Grissom used from this library.
+import { Container, ActionSheet, Root } from "native-base";
+import Exponent, {
+  Constants,
+  ImagePicker,
+  registerRootComponent
+} from 'expo';
+import base64 from 'base-64';
 import { Card, CardSection, Input, Spinner } from '../components';
 import { connect } from 'react-redux';
 import * as actions from '../actions';
 import { PRIMARY_COLOR } from '../actions/types';
 import { SEAFOAM_COLOR, DARK_GREEN } from '../constants/style';
+import * as api from '../constants/api_keys';
 
 class AdditionalSignUpScreen extends Component {
+
+      state = {
+        alphaSwitch: false,
+        pickerValue: 'Adams',
+        progress: 1,
+        avatarSource: null,
+        modalVisible: false,
+        selectedImage: null
+      }
+
+      componentWillUnmount() {
+        ActionSheet.actionsheetInstance = null;
+  }
+
+      _handleToggleSwitch = () => this.setState(state => ({
+        alphaSwitch: !this.state.alphaSwitch
+      }));
+
+
+      _pickImageSource = () => {
+        try {
+          ActionSheet.show({
+            options: [
+              "Take Photo", "Pick From Album", "Cancel"
+            ],
+            cancelButtonIndex: 2,
+            title: "Choose your Profile Picture"
+          }, buttonIndex => {
+            // this buttonIndex value is a string on andriod and a number on ios
+            console.log(buttonIndex)
+            if (buttonIndex + "" === '0') {
+              this._pickImage(true)
+            } else if (buttonIndex + "" === '1') {
+              this._pickImage(false)
+            } else {
+              console.log('nothing')
+            }
+          })
+        } catch (ee) {
+          console.log(ee)
+        }
+      }
+
+      _pickImage = async (useCamera) => {
+
+        console.log('in pick image')
+        var pickerResult
+
+        if (useCamera) {
+          pickerResult = await ImagePicker.launchCameraAsync({
+            allowsEditing: (Platform.OS === 'ios'),
+            quality: .8,
+            aspect: [1,1],
+            noData: false,
+            base64: true
+          });
+        } else {
+          pickerResult = await ImagePicker.launchImageLibraryAsync({ allowsEditing: true, quality: .8, base64: true});
+        }
+
+        if (pickerResult.cancelled)
+          return;
+        //let byteArray = this.convertToByteArray(pickerResult.base64);
+        console.log(base64.encode(pickerResult));
+        actions.uploadAsByteArray(base64.encode(pickerResult), (progress) => {
+          console.log(progress)
+          this.setState({ progress })
+        })
+
+        /**
+         * This is suppose to be where I upload the byteArray to firebase.
+         * This example has it in the api keys, but I need to do this in our auth actions.
+         * 
+         *     api.uploadAsByteArray(byteArray, (progress) => {
+                console.log(progress)
+                this.setState({ progress })
+                })
+         * 
+         */
+      }
+
+      convertToByteArray = (input) => {
+        console.log('in convertToByteArray:')
+        //console.log(input);
+        var binary_string = this.atob(input);
+        //console.log(binary_string);
+        var len = binary_string.length;
+        var bytes = new Uint8Array(len);
+        console.log('bytes:' + bytes);
+        for (var i = 0; i < len; i++) {
+          bytes[i] = binary_string.charCodeAt(i);
+        }
+        return bytes
+      }
+
+      atob = (input) => {
+        const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=';
+
+        let str = (""+input)
+          .replace(/=+$/, '')
+          .replace(/^data:image\/(png|jpg);base64,/,'');
+        let output = '';
+
+        // if (str.length % 4 == 1) {   throw new Error("'atob' failed: The string to be
+        // decoded is not correctly encoded."); }
+      
+        for (let bc = 0, bs = 0, buffer, i = 0; buffer = str.charAt(i++); ~buffer && (bs = bc % 4
+        ? bs * 64 + buffer
+        : buffer, bc++ % 4)
+        ? output += String.fromCharCode(255 & bs >> (-2 * bc & 6))
+        : 0) {
+          buffer = chars.indexOf(buffer);
+        }
+        return output;
+      }
 
       onButtonPressFinish() {
         this.props.finishSignup();
@@ -78,6 +202,7 @@ class AdditionalSignUpScreen extends Component {
     
       render() {
         return (
+          <Root>
           <ScrollView>
           <View style={styles.backgroundContainer}>
             
@@ -141,16 +266,37 @@ class AdditionalSignUpScreen extends Component {
               <Picker.Item label="University Park" value="University Park" />
               <Picker.Item label="University Village" value="University Village" />
             </Picker>
-            
+            {console.log(this.state.pickerValue, this.props.email)}
+
+            <View>
+              <Text style={{ color: 'white', fontSize: 14, flex: 1 }}>
+              Would you like to be selected for Alpha Zombie?
+
+              <Switch
+                onValueChange={this._handleToggleSwitch}
+                value={this.state.alphaSwitch}
+                style={{alignSelf: 'flex-end'}}
+              />
+              {console.log(this.state.alphaSwitch)}
+              </Text>
+            </View>
+
+            <Button
+              title="Upload Profile Picture"
+              //icon={{ name: 'vpn-key' }}
+              backgroundColor={PRIMARY_COLOR}
+              onPress={this._pickImageSource}
+            />
 
 
-        <FormValidationMessage containerStyle={{ marginBottom: 10 }}>
-              {this.renderError()}
-        </FormValidationMessage>
+            <FormValidationMessage containerStyle={{ marginBottom: 10 }}>
+                  {this.renderError()}
+            </FormValidationMessage>
     
                 {this.renderButton()}
           </View>
           </ScrollView>
+          </Root>
         );
       }
     }

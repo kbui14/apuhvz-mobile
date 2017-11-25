@@ -1,6 +1,6 @@
 import React, { Component, Children } from 'react';
-import { View, Text, TouchableWithoutFeedback, StatusBar, Image } from 'react-native';
-import firebase from 'firebase';
+import { View, Text, TouchableWithoutFeedback, StatusBar, Image, ScrollView } from 'react-native';
+import firebase, { database } from 'firebase';
 import {
   FormLabel,
   FormInput,
@@ -19,20 +19,25 @@ import { style } from 'expo/src/Font';
 class AuthScreen extends Component {
   //////////////////////////////////////////////////////////////////////////////////
   // State definition
-  state = { inSignupMode: false, showLoading: true }; // Just for local use
+  state = { inSignupMode: false, showLoading: true, needsToSignUp: false, userObject: null }; // Just for local use
 
   //////////////////////////////////////////////////////////////////////////////////
   // Register the event which detects a change of state in the logged-in user
   componentWillMount() {
     //this.props.loading = true;
-
+    
     // Check if user is persisted and "login" by navigating to main if so
     if (firebase.auth().currentUser) {
+      if (this.state.needsToSignUp){
       console.log(`${firebase.auth().currentUser.email} already logged in.`);
       return this.props.navigation.navigate('main'); // Navigate to main page
+    } else if (!this.state.needsToSignUp){
+      return this.props.navigation.navigate('sign');
+    }
     }
 
     //console.log(this.props.navigation.state.params);
+
 
     // Listen for authentication state to change.
     firebase.auth().onAuthStateChanged(user => {
@@ -40,6 +45,18 @@ class AuthScreen extends Component {
       this.props.loading = false;
       this.setState({ showLoading: this.props.loading }); // Retrigger components
 
+      // Checks to see if the user has properties within the database. If so, it will return an object. If not, null.
+      const { currentUser } = firebase.auth();
+      firebase.database().ref(`users/${currentUser.uid}`)
+      .on('value', snapshot => {
+        this.setState({ userObject: snapshot.val() });
+        //console.log(snapshot.val() + " aww yee boiii");
+      });
+      
+      if ( this.state.userObject === null ){
+        this.setState({ needsToSignUp: true });
+      }
+      
       console.log('onAuthStateChanged()');
       if (user) {
         // Print out debug info
@@ -50,11 +67,17 @@ class AuthScreen extends Component {
         console.log(`--uid: ${user.uid}`);
 
         // Navigate to main page
-        this.props.navigation.navigate('main');
-        return;
+        if (this.state.needsToSignUp && user) {
+          this.props.navigation.navigate('sign');
+          return;
+        } else if (!this.state.needsToSignUp && user){
+          this.props.navigation.navigate('main');
+          return;
+        } else {
+          this.props.navigation.navigate('auth');          
+        }
       }
 
-      this.props.navigation.navigate('auth');
     });
   }
 
@@ -92,12 +115,20 @@ class AuthScreen extends Component {
 
   //////////////////////////////////////////////////////////////////////////////////
   // Redirect user to sign up page & creates user auth via username/password
-  onStandardSignupButtonPress = () => {
-    
-    this.props.navigation.navigate('sign');
-    // Uncomment this when we are ready to create user through sign up page.
+  onStandardSignupButtonPress = () =>{
+    //try{
     //const { email, password, passwordRetype } = this.props;
-    //this.props.signupUser(email, password, passwordRetype);
+   // this.props.continueSignUp(email, password, passwordRetype);
+    /*this.props.navigation.navigate('sign');
+    }
+    catch(err){
+      return console.log(err);
+    }*/
+    // Best way to flow this: Have this point to an action that will pass in email, password, and passwordRetype.
+    // Uncomment this when we are ready to create user through sign up page.
+    this.setState({ needsToSignUp: true });
+    const { email, password, passwordRetype } = this.props;
+    this.props.signupUser(email, password, passwordRetype);
   };
 
   //////////////////////////////////////////////////////////////////////////////////
@@ -187,6 +218,7 @@ class AuthScreen extends Component {
       return <Spinner size="large" message="Authenticating..." />;
     }
     return (
+      <ScrollView>
       <View style={styles.backgroundStyle}>
 
         <StatusBar
@@ -231,6 +263,7 @@ class AuthScreen extends Component {
 
         {this.renderButtons()}
       </View>
+      </ScrollView>
     );
   }
 
@@ -257,9 +290,11 @@ const styles = {
     alignItems: 'center'
   },
   backgroundStyle: {
+    flex: 1,
     alignSelf: 'stretch',
     flexDirection: 'column',
-    backgroundColor: 'black'
+    backgroundColor: 'black',
+    paddingBottom: 150
   },
   logoContainer: {
     alignItems: 'center',
