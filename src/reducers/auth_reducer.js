@@ -12,7 +12,10 @@ import {
   RESET_APP_STATE,
   SIGNUP_LIVINGAREA_CHANGED,
   SIGNUP_FNAME_CHANGED,
-  SIGNUP_LNAME_CHANGED
+  SIGNUP_LNAME_CHANGED,
+  SIGNUP_FINAL_ATTEMPT,
+  SIGNUP_USER_FAIL,
+  SIGNUP_USER_SUCCESS
 } from '../actions/types';
 
 const INITIAL_STATE = {
@@ -25,7 +28,10 @@ const INITIAL_STATE = {
   fname: '',
   lname: '',
   livingArea: 'Adams',
-  fb_token: null
+  alpha: false,
+  profilePic: null,
+  agreed: false,
+  fb_token: null,
 };
 
 export default function (state = INITIAL_STATE, action) {
@@ -62,6 +68,12 @@ export default function (state = INITIAL_STATE, action) {
       return { ...state, fname: action.payload };
     case SIGNUP_LNAME_CHANGED:
       return { ...state, lname: action.payload };
+    case SIGNUP_FINAL_ATTEMPT:
+      return { ...state, loading: true, error: ''};
+    case SIGNUP_USER_FAIL:
+      return { ...state, error: action.payload, loading: false}
+    case SIGNUP_USER_SUCCESS:
+      return { ...state, userAtt: action.payload}
     default:
       return state;
   }

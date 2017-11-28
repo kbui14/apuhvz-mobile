@@ -28,6 +28,18 @@ class AuthScreen extends Component {
     
     // Check if user is persisted and "login" by navigating to main if so
     if (firebase.auth().currentUser) {
+      firebase.database().ref(`users/${currentUser.uid}`)
+      .on('value', snapshot => {
+        this.setState({ userObject: snapshot.val() });
+        //console.log(snapshot.val() + " aww yee boiii 01");
+      });
+
+      if ( this.state.userObject === null ){
+        this.setState({ needsToSignUp: true });
+      } else {
+        this.setState({ needsToSignUp: false});
+      }
+
       if (this.state.needsToSignUp){
       console.log(`${firebase.auth().currentUser.email} already logged in.`);
       return this.props.navigation.navigate('main'); // Navigate to main page
@@ -38,23 +50,38 @@ class AuthScreen extends Component {
 
     //console.log(this.props.navigation.state.params);
 
-
+    //console.log('Before checking firebase ' + this.state.userObject);
     // Listen for authentication state to change.
     firebase.auth().onAuthStateChanged(user => {
       // Show login screen b/c firebase has just authenticated/denied user
       this.props.loading = false;
       this.setState({ showLoading: this.props.loading }); // Retrigger components
-
+      //console.log('this is called here');
       // Checks to see if the user has properties within the database. If so, it will return an object. If not, null.
+      // How the magic works:
+      // For some reason the reference function was being called last no matter the order within this scope.
+      // So what I had to do was put everything inside the snapshot function.
+      // WILL NEED TO CLEAN THIS UP A LOT. VERY UGLY AND MESSY.
+ 
+
       const { currentUser } = firebase.auth();
+      if ( currentUser !== null){
       firebase.database().ref(`users/${currentUser.uid}`)
       .on('value', snapshot => {
-        this.setState({ userObject: snapshot.val() });
-        //console.log(snapshot.val() + " aww yee boiii");
-      });
-      
+        this.state.userObject = snapshot.val();
+        //console.log(snapshot.val());
+        //console.log(this.state.userObject);
+
+        //console.log("The User Object");
+        //console.log(this.state.userObject);
       if ( this.state.userObject === null ){
-        this.setState({ needsToSignUp: true });
+        this.state.needsToSignUp = true;    
+        //console.log(this.state.needsToSignUp);        
+        //console.log('changed needsToSignUp to true')
+      } else {
+        this.state.needsToSignUp = false;
+        //console.log(this.state.needsToSignUp);
+        //console.log('changed needsToSignUp to false');
       }
       
       console.log('onAuthStateChanged()');
@@ -65,19 +92,30 @@ class AuthScreen extends Component {
         console.log(`--Email: ${user.email}`);
         //console.log(`--Provider: ${user.providerId}`);
         console.log(`--uid: ${user.uid}`);
-
+        //console.log('needs to sign up: ' + this.state.needsToSignUp);
+        //console.log(this.state.userObject);
         // Navigate to main page
         if (this.state.needsToSignUp && user) {
+          //console.log('navigating to signup')
           this.props.navigation.navigate('sign');
           return;
         } else if (!this.state.needsToSignUp && user){
+          //console.log('navigating to main')
           this.props.navigation.navigate('main');
           return;
         } else {
+          //console.log('navigating to auth')
           this.props.navigation.navigate('auth');          
         }
       }
 
+      });
+    } else { // if the current user id is null then go to auth page.
+      this.props.navigation.navigate('auth');          
+    }
+     
+    this.props.navigation.navigate('auth');          
+    
     });
   }
 

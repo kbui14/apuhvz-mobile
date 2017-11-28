@@ -21,3 +21,6 @@ export const RESET_APP_STATE = "reset_app_state";
 export const SIGNUP_LIVINGAREA_CHANGED = "livingarea_changed";
 export const SIGNUP_FNAME_CHANGED = 'fname_changed';
 export const SIGNUP_LNAME_CHANGED = 'lname_changed';
+export const SIGNUP_FINAL_ATTEMPT = 'signup_final_attempt';
+export const SIGNUP_USER_SUCCESS = 'signup_user_success';
+export const SIGNUP_USER_FAIL = 'signup_user_fail';
