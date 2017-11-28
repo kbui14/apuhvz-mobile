@@ -9,7 +9,9 @@ import {
   Platform,
   TouchableWithoutFeedback,
   ScrollView,
-  Switch
+  Switch,
+  TouchableOpacity,
+  Modal
  } from 'react-native';
 import { Button, FormValidationMessage, FormLabel, FormInput } from 'react-native-elements'; // Using the Button that Grissom used from this library.
 import { Container, ActionSheet, Root } from "native-base";
@@ -30,6 +32,7 @@ class AdditionalSignUpScreen extends Component {
 
       state = {
         alphaSwitch: false,
+        agreeSwitch: false,
         pickerValue: 'Adams',
         progress: 1,
         avatarSource: null,
@@ -41,10 +44,36 @@ class AdditionalSignUpScreen extends Component {
         ActionSheet.actionsheetInstance = null;
   }
 
-      _handleToggleSwitch = () => this.setState(state => ({
+      _renderModalButton = (text, onPress) => (
+        <TouchableOpacity onPress={onPress}>
+          <View style={styles.modalStyle}>
+            <Text style={{color: 'white'}}>{text}</Text>
+          </View>
+        </TouchableOpacity>
+      );
+
+      _renderModalCloseButton = (text, onPress) => (
+        <TouchableOpacity onPress={onPress}>
+          <View style={styles.modalStyle}>
+            <Text>{text}</Text>
+          </View>
+        </TouchableOpacity>
+      );
+
+      _renderModalContent = () => (
+        <View style={styles.modalContent}>
+          <Text>Hello!</Text>
+          {this._renderModalCloseButton('Close', () => this.setState({ modalVisible: false }))}
+        </View>
+      );
+
+      _handleToggleAlphaSwitch = () => this.setState(state => ({
         alphaSwitch: !this.state.alphaSwitch
       }));
 
+      _handleToggleAgreeSwitch = () => this.setState(state => ({
+        agreeSwitch: !this.state.agreeSwitch
+      }));
 
       _pickImageSource = () => {
         try {
@@ -143,8 +172,15 @@ class AdditionalSignUpScreen extends Component {
         return output;
       }
 
-      onButtonPressFinish() {
-        this.props.finishSignup();
+      onButtonPressFinish = () => {
+        /*console.log(
+          'fname: ' + this.props.fname,
+          'lname: ' + this.props.lname,
+          'livingArea: ' + this.state.pickerValue,
+          'alpha: ' + this.state.alphaSwitch,
+          'agree' + this.state.agreeSwitch
+        )*/
+        this.props.finishSignup(this.props.fname, this.props.lname, this.state.pickerValue, this.state.alphaSwitch, null, this.state.agreeSwitch);
       }
 
       //////////////////////////////////////////////////////////////////////////////////
@@ -173,7 +209,7 @@ class AdditionalSignUpScreen extends Component {
             title="Finish"
             //icon={{ name: 'vpn-key' }}
             backgroundColor={PRIMARY_COLOR}
-            //onPress={this.onStandardSignupButtonPress}
+            onPress={this.onButtonPressFinish}
           />
         </View>
     
@@ -266,31 +302,39 @@ class AdditionalSignUpScreen extends Component {
               <Picker.Item label="University Park" value="University Park" />
               <Picker.Item label="University Village" value="University Village" />
             </Picker>
-            {console.log(this.state.pickerValue, this.props.email)}
 
             <View>
               <Text style={{ color: 'white', fontSize: 14, flex: 1 }}>
               Would you like to be selected for Alpha Zombie?
-
-              <Switch
-                onValueChange={this._handleToggleSwitch}
-                value={this.state.alphaSwitch}
-                style={{alignSelf: 'flex-end'}}
-              />
-              {console.log(this.state.alphaSwitch)}
               </Text>
+              <Switch
+                onValueChange={this._handleToggleAlphaSwitch}
+                value={this.state.alphaSwitch}
+                style={{alignSelf: 'flex-end', flexDirection: 'row'}}
+              />
+              
             </View>
 
-            <Button
+            {/*<Button
               title="Upload Profile Picture"
               //icon={{ name: 'vpn-key' }}
               backgroundColor={PRIMARY_COLOR}
               onPress={this._pickImageSource}
-            />
-
+            />*/}
+            <View>
+                {this._renderModalButton('I agree', () => this.setState({ modalVisible: true }))}
+                <Modal visible={this.state.modalVisible}> 
+                  {this._renderModalContent()}
+                </Modal>
+                <Switch
+                  onValueChange={this._handleToggleAgreeSwitch}
+                  value={this.state.agreeSwitch}
+                  style={{alignSelf: 'flex-end', flexDirection: 'row'}}
+                />
+              </View>
 
             <FormValidationMessage containerStyle={{ marginBottom: 10 }}>
-                  {this.renderError()}
+              {this.props.error}
             </FormValidationMessage>
     
                 {this.renderButton()}
@@ -351,6 +395,23 @@ class AdditionalSignUpScreen extends Component {
       },
       textInputStyle: {
         color: 'white'
+      },
+      modalStyle: {
+        backgroundColor: SEAFOAM_COLOR,
+        padding: 12,
+        margin: 16,
+        justifyContent: 'center',
+        alignItems: 'center',
+        borderRadius: 4,
+        borderColor: 'rgba(0, 0, 0, 0.1)'
+      },
+      modalContent: {
+        backgroundColor: 'white',
+        padding: 22,
+        justifyContent: 'center',
+        alignItems: 'center',
+        borderRadius: 4,
+        borderColor: 'rgba(0, 0, 0, 0.1)'
       }
     });
 
@@ -361,6 +422,8 @@ class AdditionalSignUpScreen extends Component {
         passwordRetype: auth.passwordRetype,
         error: auth.error,
         loading: auth.loading,
+        fname: auth.fname,
+        lname: auth.lname,
         livingArea: auth.livingArea
       };
     }

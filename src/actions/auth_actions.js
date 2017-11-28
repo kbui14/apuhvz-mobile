@@ -15,7 +15,10 @@ import {
   RESET_SIGNUP_LOGIN_PAGES,
   SIGNUP_LIVINGAREA_CHANGED,
   SIGNUP_FNAME_CHANGED,
-  SIGNUP_LNAME_CHANGED
+  SIGNUP_LNAME_CHANGED,
+  SIGNUP_FINAL_ATTEMPT,
+  SIGNUP_USER_SUCCESS,
+  SIGNUP_USER_FAIL
 } from './types.js';
 
 ////////////////////////////////////////////////////////////////
@@ -74,6 +77,9 @@ export const signupUser = (email, password, passwordRetype) => async dispatch =>
     // Dispatch event to trigger loading spinner
     dispatch({ type: AUTH_USER_ATTEMPT });
 
+    if (!email.match(/@apu.edu/)){
+      return loginUserFail(dispatch, 'Please an @apu.edu email');
+    }
     if (password !== passwordRetype) {
       return loginUserFail(dispatch, 'Passwords do not match');
     }
@@ -128,44 +134,71 @@ const loginUserFail = (dispatch, error = '') => {
 ////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////
 
+const finishSignupFail = (dispatch, error = '') => {
+  dispatch({
+    type: SIGNUP_USER_FAIL,
+    payload: error
+  });
+};
 
-export const continueSignUp = (email, password, passwordRetype) => async dispatch => {
+const finishSignupSuccess = (dispatch, userAtt) => {
+  dispatch({
+    type: SIGNUP_USER_SUCCESS,
+    payload: userAtt
+  });
+};
+
+
+export const finishSignup = (fName, lname, livingArea, alpha, profilePic, agreed) => async dispatch => {
+  console.log('in finishSignUp');
+  var pid = '',
+      status = 'Human';
+      isVerified = false,
+      vaccines = 0,
+      missions = 0,
+      auxMissions = 0,
+      timer = Date.now()
+
+      console.log('timer: ' + timer);
+
+      pid = Math.random().toString(36).substr(2,6);
+      console.log('pid ' + pid);
+
   try {
-    // Dispatch event to trigger loading spinner
-    dispatch({ type: AUTH_USER_ATTEMPT });
-    console.log('in continueSignUp');
-    if (password !== passwordRetype) {
-      return loginUserFail(dispatch, 'Passwords do not match');
+    dispatch({ type: SIGNUP_FINAL_ATTEMPT });
+    console.log('in finishSignUp');
+    if ( fName === '' ){
+      return finishSignupFail(dispatch, 'First name is required');
     }
-    if (email === '' && password === '') {
-      return loginUserFail(dispatch, 'Email and pasword are required');
+    if ( lname === ''){
+      return finishSignupFail(dispatch, 'Last name is required');
     }
-    if (!email.matches(/@apu.edu/)){
-      return loginUserFail(dispatch, 'Email must be @apu.edu')
+    if (!agreed){
+      return finishSignupFail(dispatch, 'You must agree to the terms');
     }
-    //Fix this part        this.props.navigation.navigate('sign');
-    return this.props.navigation.navigate('sign');
-    // Attempt to signup new user
-    //const { user } = await firebase.auth().createUserWithEmailAndPassword(email, password);
-    //console.log(user);
-    //authUserSuccess(dispatch, user);
+
+
+    const { currentUser } = firebase.auth();
+    
+    
+    firebase.database().ref(`/users/${currentUser.uid}`)
+      .push({ fName, lname, livingArea, alpha, profilePic, agreed, pid, status, isVerified, vaccines, missions, auxMissions, timer })
+      .then(() => {
+        console.log('Dispatched user attributes: ' + dispatch + '    ');
+      });
+      currentUser.updateProfile({
+        displayName: fName + " " + lname
+      }).then(function() {
+        authUserSuccess(dispatch, currentUser);        
+      }).catch(function(error){
+        finishSignupFail(dispatch, 'Something went wrong: ' + error)
+        console.log(error);
+      });
   } catch (err) {
+    console.log('uh oh error coming in!  ' + err.message);
     switch (err.code) {
-      case 'auth/email-already-in-use':
-        return loginUserFail(
-          dispatch,
-          `${email} already in use - Please try anothere-mail address or log in with a social media provider`
-        );
-      case 'auth/invalid-email':
-        return loginUserFail(
-          dispatch,
-          `${email} is an invalid email address - Please ensure you typed your e-mail correctly`
-        );
-      case 'auth/weak-password':
-        return loginUserFail(dispatch, 'Password is too weak - Please try again.');
       default:
-        // console.log(err.message);
-        return loginUserFail(dispatch, err.message);
+      return finishSignupFail(dispatch, err.message);
     }
   }
 };
