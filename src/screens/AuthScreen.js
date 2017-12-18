@@ -92,6 +92,7 @@ class AuthScreen extends Component {
         console.log(`--Email: ${user.email}`);
         //console.log(`--Provider: ${user.providerId}`);
         console.log(`--uid: ${user.uid}`);
+        console.log(`isVerified: ${user.emailVerified}`)
         //console.log('needs to sign up: ' + this.state.needsToSignUp);
         //console.log(this.state.userObject);
         // Navigate to main page

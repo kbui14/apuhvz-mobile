@@ -59,7 +59,7 @@ class AuthScreen extends Component {
         this.props.navigation.dispatch({
           type: 'Navigation/RESET',
           index: 0,
-          actions: [{ type: 'Navigate', routeName: 'searchResults' }]
+          actions: [{ type: 'Navigate', routeName: 'enterkill' }]
         });
         this.props.navigation.navigate('auth');
       }

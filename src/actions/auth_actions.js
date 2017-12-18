@@ -186,14 +186,23 @@ export const finishSignup = (fName, lname, livingArea, alpha, profilePic, agreed
       .then(() => {
         console.log('Dispatched user attributes: ' + dispatch + '    ');
       });
+
       currentUser.updateProfile({
         displayName: fName + " " + lname
       }).then(function() {
-        authUserSuccess(dispatch, currentUser);        
+        console.log("Updated Display Name");        
       }).catch(function(error){
         finishSignupFail(dispatch, 'Something went wrong: ' + error)
         console.log(error);
       });
+
+      currentUser.sendEmailVerification()
+        .then(function() {
+          authUserSuccess(dispatch, currentUser);        
+        }).catch(function(error){
+          finishSignupFail(dispatch, 'Something went wrong: ' + error)
+          console.log(error);
+      });      
   } catch (err) {
     console.log('uh oh error coming in!  ' + err.message);
     switch (err.code) {
