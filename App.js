@@ -19,10 +19,17 @@ import { Provider } from "react-redux";
 import firebase from "firebase";
 
 import store from "./src/store";
-import SearchScreen from "./src/screens/SearchScreen";
-import SearchResultsScreen from "./src/screens/SearchResultsScreen";
-import VendorScreen from "./src/screens/VendorScreen";
+import Home from "./src/screens/Home";
+import RulesScreen from "./src/screens/RulesScreen";
+import StaffScreen from "./src/screens/StaffScreen";
+import StatusScreen from "./src/screens/StatusScreen";
+import ProfileScreen from "./src/screens/ProfileScreen";
+import InstagramScreen from "./src/screens/InstagramScreen";
+import FaceBookScreen from "./src/screens/FaceBookScreen";
+import SnapChatScreen from './src/screens/SnapchatScreen';
+import TwitterScreen from './src/screens/TwitterScreen';
 import WelcomeScreen from "./src/screens/WelcomeScreen";
+import EnterKillScreen from "./src/screens/EnterKillScreen";
 import AuthScreen from "./src/screens/AuthScreen";
 import AdditionalSignUpScreen from "./src/screens/AdditionalSignUpScreen";
 import SignoutScreen from "./src/screens/SignoutScreen";
@@ -60,13 +67,20 @@ export default class App extends React.Component {
     // Inner StackNavigator for search results
     const HomeScene = StackNavigator(
       {
-        search: { screen: SearchScreen },
-        searchResults: { screen: SearchResultsScreen },
-        vendor: { screen: VendorScreen }
-      },
+        home: { screen: Home },
+        rules: { screen: RulesScreen },
+        staff: { screen: StaffScreen },
+        status: { screen: StatusScreen },
+        enterkill: { screen: EnterKillScreen },
+        instagram: { screen: InstagramScreen},
+        facebook: { screen: FaceBookScreen },
+        twitter: { screen: TwitterScreen },
+        profile: { screen: ProfileScreen },                
+        snapchat: { screen: SnapChatScreen },
+        },
       {
         navigationOptions: {
-          headerStyle: { backgroundColor: PRIMARY_COLOR },
+          headerStyle: { backgroundColor: 'black' },
           headerBackTitleStyle: { color: "#FFF" },
           headerTitleStyle: { color: "#FFF" },
           headerTintColor: "#FFF"
@@ -81,7 +95,7 @@ export default class App extends React.Component {
         <View
           style={{
             flex: 1,
-            backgroundColor: PRIMARY_COLOR,
+            backgroundColor: 'black',
             alignItems: "center",
             alignContent: "center",
           }}
@@ -107,6 +121,15 @@ export default class App extends React.Component {
     const MainDrawer = DrawerNavigator(
       {
         home: { screen: HomeScene },
+        rules: { screen: RulesScreen },
+        staff: { screen: StaffScreen },
+        status: { screen: StatusScreen },
+        enterkill: { screen: EnterKillScreen },
+        instagram: { screen: InstagramScreen},        
+        facebook: { screen: FaceBookScreen},
+        twitter: { screen: TwitterScreen },
+        snapchat: { screen: SnapChatScreen },
+        profile: { screen: ProfileScreen },        
         signout: { screen: SignoutScreen }
       },
       {
@@ -161,6 +184,7 @@ const styles = StyleSheet.create({
   },
   logo:{
     width: 250,
-    height: 120
+    height: 120,
+    marginTop: 10
   }
 });

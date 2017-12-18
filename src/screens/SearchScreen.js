@@ -27,7 +27,7 @@ class SearchScreen extends Component {
       />
     ),
     drawerIcon: ({ tintColor }) => (
-      <Icon name="home" size={25} color={tintColor} />
+      <Icon name="user" size={25} color={tintColor} />
     )
   });
 
