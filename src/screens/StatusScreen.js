@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import { View, Text } from "react-native";
+import firebase from 'firebase';
 import { Icon, FormLabel, FormInput, Button } from "react-native-elements";
 import { connect } from "react-redux";
 import * as actions from "../actions";
@@ -53,15 +54,25 @@ class StatusScreen extends Component {
     //});
   };
 
+  renderContent() {
+    var user = firebase.auth().currentUser;
+    //console.log('emailVerified: ' + user.emailVerified);
+    if (!user.emailVerified) {
+      return <Text>You still need to verify your email! Please check your email.</Text>;
+    }
+    return (
+      <Text>
+        Status Page... Coming Soon!
+      </Text>
+    );
+  }
+
   //////////////////////////////////////////////////////////////////////////////////
   // Render method
   render() {
     return (
       <View>
-        <Text>
-          Status Page... Coming soon!
-        </Text>
-
+        {this.renderContent()}
       </View>
     );
   }

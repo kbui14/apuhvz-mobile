@@ -67,8 +67,8 @@ export default class App extends React.Component {
     // Inner StackNavigator for search results
     const HomeScene = StackNavigator(
       {
-        home: { screen: Home },
-        rules: { screen: RulesScreen },
+        home: { screen: Home, navigationOptions:{drawerLabel: () => null, drawerIcon: () => null} },
+        rules: { screen: RulesScreen },        
         staff: { screen: StaffScreen },
         status: { screen: StatusScreen },
         enterkill: { screen: EnterKillScreen },
@@ -120,7 +120,8 @@ export default class App extends React.Component {
     // Main side drawer
     const MainDrawer = DrawerNavigator(
       {
-        home: { screen: HomeScene },
+        drawer: { screen: HomeScene, navigationOptions:{ tabBarVisible: false } },
+        home: { screen: Home },
         rules: { screen: RulesScreen },
         staff: { screen: StaffScreen },
         status: { screen: StatusScreen },
@@ -133,7 +134,7 @@ export default class App extends React.Component {
         signout: { screen: SignoutScreen }
       },
       {
-        contentComponent: customDrawerComponent
+        contentComponent: customDrawerComponent,
         // contentOptions: {
         //   activeTintColor: { color: '#F00' }
         // }
