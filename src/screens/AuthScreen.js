@@ -337,7 +337,7 @@ const styles = {
   logoContainer: {
     alignItems: 'center',
     justifyContent: 'center',
-    padding: 100,
+    padding: 100
   },
   logo:{
     width: 250,

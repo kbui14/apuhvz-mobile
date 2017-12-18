@@ -16,7 +16,7 @@ class AuthScreen extends Component {
   static navigationOptions = {
     //tabBarVisible: false,
     title: 'Sign Out',
-    drawerIcon: ({ tintColor }) => <Icon type="entypo" name="log-out" size={25} color={tintColor} />
+    drawerIcon: ({ tintColor }) => <Icon type="font-awesome" name="sign-out" size={25} color={tintColor} />
   };
 
   //////////////////////////////////////////////////////////////////////////////////
