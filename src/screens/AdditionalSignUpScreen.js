@@ -13,6 +13,7 @@ import {
   TouchableOpacity,
   Modal
  } from 'react-native';
+import firebase from 'firebase';
 import { Button, FormValidationMessage, FormLabel, FormInput } from 'react-native-elements'; // Using the Button that Grissom used from this library.
 import { Container, ActionSheet, Root } from "native-base";
 import Exponent, {
@@ -38,7 +39,7 @@ class AdditionalSignUpScreen extends Component {
         avatarSource: null,
         modalVisible: false,
         selectedImage: null
-      }
+      };
 
       componentWillUnmount() {
         ActionSheet.actionsheetInstance = null;
@@ -75,7 +76,7 @@ class AdditionalSignUpScreen extends Component {
         agreeSwitch: !this.state.agreeSwitch
       }));
 
-      _pickImageSource = () => {
+      _pickImageSource = async() => {
         try {
           ActionSheet.show({
             options: [
@@ -97,6 +98,8 @@ class AdditionalSignUpScreen extends Component {
         } catch (ee) {
           console.log(ee)
         }
+
+        
       }
 
       _pickImage = async (useCamera) => {
@@ -109,21 +112,21 @@ class AdditionalSignUpScreen extends Component {
             allowsEditing: (Platform.OS === 'ios'),
             quality: .8,
             aspect: [1,1],
-            noData: false,
             base64: true
           });
         } else {
           pickerResult = await ImagePicker.launchImageLibraryAsync({ allowsEditing: true, quality: .8, base64: true});
         }
 
+        
         if (pickerResult.cancelled)
           return;
         //let byteArray = this.convertToByteArray(pickerResult.base64);
-        console.log(base64.encode(pickerResult));
-        actions.uploadAsByteArray(base64.encode(pickerResult), (progress) => {
-          console.log(progress)
-          this.setState({ progress })
-        })
+        //console.log(base64.encode(pickerResult));
+        //actions.uploadAsByteArray(base64.encode(pickerResult), (progress) => {
+        //console.log(progress)
+        
+        this.setState({ selectedImage: pickerResult.base64 });
 
         /**
          * This is suppose to be where I upload the byteArray to firebase.
@@ -180,7 +183,8 @@ class AdditionalSignUpScreen extends Component {
           'alpha: ' + this.state.alphaSwitch,
           'agree' + this.state.agreeSwitch
         )*/
-        this.props.finishSignup(this.props.fname, this.props.lname, this.state.pickerValue, this.state.alphaSwitch, null, this.state.agreeSwitch);
+        this.props.finishSignup(this.props.fname, this.props.lname, this.state.pickerValue, this.state.alphaSwitch, this.state.selectedImage, this.state.agreeSwitch);
+        this.props.navigation.navigate('main');
       }
 
       //////////////////////////////////////////////////////////////////////////////////
@@ -227,14 +231,6 @@ class AdditionalSignUpScreen extends Component {
         }
       }
 
-      renderSignUp() {
-            
-            // living area
-            // alpha zombie
-            // image upload
-            // finish
-        
-          }
     
       render() {
         return (
@@ -283,7 +279,7 @@ class AdditionalSignUpScreen extends Component {
           {/* This is the Picker for Living Areas.
               Issue: It does not change values
 
-              Update: I was able to fix the issue, but it is not usind redux...
+              Update: I was able to fix the issue, but it is not using redux...
           */}
 
             <Picker
@@ -321,7 +317,11 @@ class AdditionalSignUpScreen extends Component {
               backgroundColor={PRIMARY_COLOR}
               onPress={this._pickImageSource}
             />*/}
-            <View>
+
+
+            {/*<Image source ={{ uri: this.state.selectedImage }}/>*/}
+
+              <View>
                 {this._renderModalButton('I agree', () => this.setState({ modalVisible: true }))}
                 <Modal visible={this.state.modalVisible}> 
                   {this._renderModalContent()}

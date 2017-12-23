@@ -24,3 +24,9 @@ export const SIGNUP_LNAME_CHANGED = 'lname_changed';
 export const SIGNUP_FINAL_ATTEMPT = 'signup_final_attempt';
 export const SIGNUP_USER_SUCCESS = 'signup_user_success';
 export const SIGNUP_USER_FAIL = 'signup_user_fail';
+
+export const USER_FETCH_SUCCESS = 'user_fetch_success';
+export const USER_HUMAN_FETCH_SUCCESS = 'user_human_fetch_success';
+export const USER_ALPHA_FETCH_SUCCESS = 'user_alpha_fetch_success';
+export const USER_ZOMBIE_FETCH_SUCCESS = 'user_zombie_fetch_success';
+export const USER_DEAD_FETCH_SUCCESS = 'user_dead_fetch_success';

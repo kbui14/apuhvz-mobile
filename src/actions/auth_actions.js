@@ -176,13 +176,47 @@ export const finishSignup = (fName, lname, livingArea, alpha, profilePic, agreed
     if (!agreed){
       return finishSignupFail(dispatch, 'You must agree to the terms');
     }
-
-
+    
     const { currentUser } = firebase.auth();
     
+    /*
+    console.log("Profile Picture uri: " + profilePic);
     
-    firebase.database().ref(`/users/${currentUser.uid}`)
-      .push({ fName, lname, livingArea, alpha, profilePic, agreed, pid, status, isVerified, vaccines, missions, auxMissions, timer })
+    var storageRef = firebase.storage().ref();
+
+    var usersRef = storageRef.child(`${currentUser.email}_HvZ.jpg`);
+
+    var userImagesRef = storageRef.child(`userImages/${currentUser.email}_HvZ.jpg`)
+    usersRef.name === userImagesRef.name
+    usersRef.fullPath === userImagesRef.fullPath
+
+    userImagesRef.putString(profilePic, 'base64').then(function(snapshot) {
+      console.log('Uploaded a base64 string!');
+    });
+    */
+
+
+    /*const imageName = `${currentUser.email}_HvZ.jpg`;
+    const body = new FormData();
+    body.append(`${currentUser.email})HvZ`, {
+      uri: profilePic,
+      imageName,
+      type: "image/jpg"
+    });
+    const res = await fetch(profilePic, {
+      method: "POST",
+      body,
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "multipart/form-data"
+      }
+    });
+    const url = await firebase.storage().ref(imageName).getDownloadURL();
+    */
+
+    var userID = currentUser.uid;
+    firebase.database().ref(`/users/`)
+      .push({ fName, lname, livingArea, alpha, profilePic, agreed, pid, status, isVerified, vaccines, missions, auxMissions, timer, userID })
       .then(() => {
         console.log('Dispatched user attributes: ' + dispatch + '    ');
       });
@@ -197,7 +231,7 @@ export const finishSignup = (fName, lname, livingArea, alpha, profilePic, agreed
       });
 
       currentUser.sendEmailVerification()
-        .then(function() {
+        .then( () => {
           authUserSuccess(dispatch, currentUser);        
         }).catch(function(error){
           finishSignupFail(dispatch, 'Something went wrong: ' + error)
