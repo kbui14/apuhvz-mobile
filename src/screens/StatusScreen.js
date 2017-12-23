@@ -1,13 +1,21 @@
 import React, { Component } from "react";
-import { View, Text } from "react-native";
+import { View, Text, ListView } from "react-native";
 import firebase from 'firebase';
-import { Icon, FormLabel, FormInput, Button } from "react-native-elements";
+import { Icon, FormLabel, FormInput, Button, List, ListItem, Divider } from "react-native-elements";
 import { connect } from "react-redux";
-import * as actions from "../actions";
+import { 
+  usersFetch, 
+  humanUsersCountFetch,
+  alphaUsersCountFetch, 
+  zombieUsersCountFetch,
+  deadUsersCountFetch
+} from "../actions";
+import _ from 'lodash';
 
 import { PRIMARY_COLOR } from "../constants/style";
 
 class StatusScreen extends Component {
+
   //////////////////////////////////////////////////////////////////////////////////
   // Properties automatically referred to by react-navigation navigators
   static navigationOptions = ({ navigation }) => ({
@@ -37,39 +45,165 @@ class StatusScreen extends Component {
   //////////////////////////////////////////////////////////////////////////////////
   // Initialize the component
   componentWillMount() {
-    // ***DTG - JUST FOR TESTING SO I DON"T HAVE TO KEEP TYPING THIS IN
-    //this.setState({ place: "McDonalds" });
-    //this.setState({ location: "Azusa, CA" });
-    // Upon loading the app, load any static resources...
+    // Must retrieve User data
+
+    this.props.usersFetch();
+    this.props.humanUsersCountFetch();
+    this.props.alphaUsersCountFetch();
+    this.props.zombieUsersCountFetch();
+    this.props.deadUsersCountFetch();
+
+    this.createDataSource(this.props)
+  }
+
+
+
+  componentWillReceiveProps(nextProps) {
+    // nextProps are the next set of props that this component
+    // will be rendered with
+    // this.props is still the old set of props
+    console.log("Testing next props: " + nextProps);
+    this.createDataSource(nextProps);
+
+  }
+
+  createDataSource({ users }) {
+    const ds = new ListView.DataSource({
+      rowHasChanged: (r1, r2) => r1 !== r2
+    });
+    //console.log('in createDataSource')
+    //console.log(users.fName);
+    this.dataSource = ds.cloneWithRows(users);
+    //console.log(this.dataSource);
   }
 
   //////////////////////////////////////////////////////////////////////////////////
   // Handler for the serach button
   onButtonPress = () => {
 
-
+    console.log("button pressed!");
     
     //this.props.fetchPlaces(this.state.place, this.state.location, () => {
       //this.props.navigation.navigate("searchResults"); // Passing a callback function
     //});
   };
 
-  renderContent() {
+  renderContent(users) {
     var user = firebase.auth().currentUser;
-    //console.log('emailVerified: ' + user.emailVerified);
     if (!user.emailVerified) {
       return <Text>You still need to verify your email! Please check your email.</Text>;
     }
     return (
-      <Text>
-        Status Page... Coming Soon!
-      </Text>
+      <List>
+        <Text h1 style={{ textAlign: "center", marginTop: 10 }}>
+          Humans: {this.props.humanCount + this.props.alphaCount}
+        </Text>
+        <Divider style={{ backgroundColor: PRIMARY_COLOR }} />
+        <ListView
+          enableEmptySections
+          renderRow={this.renderHumanRow}
+          dataSource={this.dataSource}
+          
+        />
+        <Text h1 style={{ textAlign: "center", marginTop: 10 }}>
+          Zombies: {this.props.zombieCount}
+        </Text>
+        <Divider style={{ backgroundColor: PRIMARY_COLOR }} />
+        <ListView
+          enableEmptySections
+          renderRow={this.renderZombieRow}
+          dataSource={this.dataSource}
+        />
+         <Text h1 style={{ textAlign: "center", marginTop: 10 }}>
+          Dead: {this.props.deadCount}
+        </Text>
+        <Divider style={{ backgroundColor: PRIMARY_COLOR }} />
+        <ListView
+          enableEmptySections
+          renderRow={this.renderDeadRow}
+          dataSource={this.dataSource}
+        />
+      </List>
     );
+  }
+
+  renderHumanRow = (user , sectionID) => {
+    //console.log('Section ID: ' + sectionID);
+    //console.log("User Data: ")
+    //console.log(user);
+    //console.log(fName);
+    //console.log("in renderRow");
+    const { fName, lname, status } = user;
+
+
+    // if status === alpha || human
+    // human counter ++;
+    // return list item with subtitle = human
+
+    if (status === 'Human' || status === 'Alpha'){
+      //this.state.humanCount = this.state.humanCount + 1;
+      //console.log("human Count: " + this.state.humanCount);
+      //this._humanCounter();
+      //console.log("human counter: " + this.state.humanCount);
+      return (<ListItem
+                roundAvatar
+                key={sectionID}
+                title={fName + " " + lname}
+                subtitle='Human'
+                //onPress={this.onButtonPress}
+              />
+    )}
+    return null;
+  }
+
+  renderZombieRow (user, sectionID){
+    //console.log('Section ID: ' + sectionID);
+    //console.log("User Data: ")
+    //console.log(this.props.humanCount);
+    //console.log(user);
+    //console.log(fName);
+    //console.log("in renderRow");
+    const { fName, lname, status } = user;
+
+
+    // if status === alpha || human
+    // human counter ++;
+    // return list item with subtitle = human
+
+    if (status === 'Zombie'){
+
+      return (<ListItem
+                roundAvatar
+                key={sectionID}
+                title={fName + " " + lname}
+                subtitle='Zombie'
+                onPress={this.onButtonPress}
+              />
+    )}
+    return null;
+  }
+
+  renderDeadRow (user, sectionID){
+
+    const { fName, lname, status } = user;
+
+    if (status === 'Dead'){
+
+      return (<ListItem
+                roundAvatar
+                key={sectionID}
+                title={fName + " " + lname}
+                subtitle='Dead'
+                onPress={this.onButtonPress}
+              />
+    )}
+    return null;
   }
 
   //////////////////////////////////////////////////////////////////////////////////
   // Render method
   render() {
+    //console.log(this.props.users.fName);
     return (
       <View>
         {this.renderContent()}
@@ -78,4 +212,16 @@ class StatusScreen extends Component {
   }
 }
 
-export default connect(null, actions)(StatusScreen);
+function mapStateToProps({ users }){
+  console.log("what is users: ");
+  console.log(users);
+  return {
+    humanCount: users.humanCount,
+    alphaCount: users.alphaCount,
+    zombieCount: users.zombieCount,
+    deadCount: users.deadCount,
+    users: users.user
+  }
+}
+
+export default connect(mapStateToProps, { usersFetch, humanUsersCountFetch, alphaUsersCountFetch, zombieUsersCountFetch, deadUsersCountFetch })(StatusScreen);

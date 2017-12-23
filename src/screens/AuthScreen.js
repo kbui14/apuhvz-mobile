@@ -25,16 +25,18 @@ class AuthScreen extends Component {
   // Register the event which detects a change of state in the logged-in user
   componentWillMount() {
     //this.props.loading = true;
-    
+    console.log("In component will mount")
     // Check if user is persisted and "login" by navigating to main if so
+    console.log(firebase.auth().currentUser);
     if (firebase.auth().currentUser) {
-      firebase.database().ref(`users/${currentUser.uid}`)
-      .on('value', snapshot => {
+      console.log("In firebase.auth().currentUser ");
+      firebase.database().ref(`users/`)
+      .orderByChild('userID').equalTo(currentUser.uid).on("child_added", snapshot =>{
         this.setState({ userObject: snapshot.val() });
-        //console.log(snapshot.val() + " aww yee boiii 01");
+        console.log(snapshot.val() + " aww yee boiii 01");
       });
 
-      if ( this.state.userObject === null ){
+      if ( this.state.userObject === undefined ){
         this.setState({ needsToSignUp: true });
       } else {
         this.setState({ needsToSignUp: false});
@@ -48,6 +50,7 @@ class AuthScreen extends Component {
     }
     }
 
+
     //console.log(this.props.navigation.state.params);
 
     //console.log('Before checking firebase ' + this.state.userObject);
@@ -56,6 +59,21 @@ class AuthScreen extends Component {
       // Show login screen b/c firebase has just authenticated/denied user
       this.props.loading = false;
       this.setState({ showLoading: this.props.loading }); // Retrigger components
+      var contSignUp = true;
+      if ( user ){
+        
+        // Print out debug info
+        console.log('onAuthStateChanged()');        
+        console.log('--We are authenticated now!');
+        console.log(`--Display Name: ${user.displayName}`);
+        console.log(`--Email: ${user.email}`);
+        //console.log(`--Provider: ${user.providerId}`);
+        console.log(`--uid: ${user.uid}`);
+        console.log(`isVerified: ${user.emailVerified}`);
+        console.log("continue sign up: " + contSignUp);        
+        //console.log('needs to sign up: ' + this.state.needsToSignUp);
+        //console.log(this.state.userObject);
+      
       //console.log('this is called here');
       // Checks to see if the user has properties within the database. If so, it will return an object. If not, null.
       // How the magic works:
@@ -65,59 +83,67 @@ class AuthScreen extends Component {
  
 
       const { currentUser } = firebase.auth();
-      if ( currentUser !== null){
-      firebase.database().ref(`users/${currentUser.uid}`)
-      .on('value', snapshot => {
-        this.state.userObject = snapshot.val();
-        //console.log(snapshot.val());
-        //console.log(this.state.userObject);
-
+      console.log("About to reference database");
+      //console.log(user);
+      firebase.database().ref(`users/`)
+      .orderByChild('userID').equalTo(user.uid).on('child_changed', snapshot =>{
+        
+        console.log
+        console.log("In Database ref");
+        console.log(snapshot.val());
+        if( snapshot.val() !== undefined){
+          contSignUp = false;
+          console.log("continue sign up: " + contSignUp);          
+        }
+      //}); // TEST: Puts all the if statements outside of the firebase reference
         //console.log("The User Object");
         //console.log(this.state.userObject);
-      if ( this.state.userObject === null ){
-        this.state.needsToSignUp = true;    
+      //if ( this.state.userObject === null ){
+        //this.state.needsToSignUp = true;    
         //console.log(this.state.needsToSignUp);        
         //console.log('changed needsToSignUp to true')
-      } else {
-        this.state.needsToSignUp = false;
+      //} else {
+        //this.state.needsToSignUp = false;
         //console.log(this.state.needsToSignUp);
         //console.log('changed needsToSignUp to false');
-      }
+      //}
       
-      console.log('onAuthStateChanged()');
       if (user) {
-        // Print out debug info
-        console.log('--We are authenticated now!');
-        console.log(`--Display Name: ${user.displayName}`);
-        console.log(`--Email: ${user.email}`);
-        //console.log(`--Provider: ${user.providerId}`);
-        console.log(`--uid: ${user.uid}`);
-        console.log(`isVerified: ${user.emailVerified}`)
-        //console.log('needs to sign up: ' + this.state.needsToSignUp);
-        //console.log(this.state.userObject);
+        console.log("Navigating time");
         // Navigate to main page
-        if (this.state.needsToSignUp && user) {
-          //console.log('navigating to signup')
+        if (contSignUp && user) {
+          console.log('navigating to signup')
           this.props.navigation.navigate('sign');
           return;
-        } else if (!this.state.needsToSignUp && user){
-          //console.log('navigating to main')
+        } else if (!contSignUp && user){
+          console.log('navigating to main')
           this.props.navigation.navigate('main');
           return;
         } else {
-          //console.log('navigating to auth')
+          console.log('navigating to auth')
           this.props.navigation.navigate('auth');          
         }
       }
-
       });
+      
+      console.log("Redirecting to appropriate page");
+      if ( user.displayName && user) {
+       this.props.navigation.navigate('main'); 
+      }
+      else if ( user.displayName === null && user){
+        console.log("navigating to signup");
+        this.props.navigation.navigate('sign');
+      }
+
     } else { // if the current user id is null then go to auth page.
       this.props.navigation.navigate('auth');          
     }
-     
-    this.props.navigation.navigate('auth');          
+    console.log("Goodbye");
+    //this.props.navigation.navigate('auth');          
     
     });
+
+    
   }
 
   //////////////////////////////////////////////////////////////////////////////////

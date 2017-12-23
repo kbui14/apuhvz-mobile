@@ -23,6 +23,7 @@ const INITIAL_STATE = {
   password: '',
   passwordRetype: '',
   user: null,
+  userAtt: null,
   error: '',
   loading: false,
   fname: '',
