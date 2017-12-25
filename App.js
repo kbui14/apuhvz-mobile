@@ -33,6 +33,7 @@ import EnterKillScreen from "./src/screens/EnterKillScreen";
 import AuthScreen from "./src/screens/AuthScreen";
 import AdditionalSignUpScreen from "./src/screens/AdditionalSignUpScreen";
 import SignoutScreen from "./src/screens/SignoutScreen";
+import UserDescriptionScreen from './src/screens/UserDescriptionScreen';
 
 import { GOOGLE_FIREBASE_CONFIG } from "./src/constants/api_keys";
 import { PRIMARY_COLOR } from "./src/constants/style";
@@ -77,6 +78,7 @@ export default class App extends React.Component {
         twitter: { screen: TwitterScreen },
         profile: { screen: ProfileScreen },                
         snapchat: { screen: SnapChatScreen },
+        userDescription: { screen: UserDescriptionScreen }
         },
       {
         navigationOptions: {
