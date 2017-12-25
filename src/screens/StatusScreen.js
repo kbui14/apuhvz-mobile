@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { View, Text, ListView } from "react-native";
 import firebase from 'firebase';
-import { Icon, FormLabel, FormInput, Button, List, ListItem, Divider } from "react-native-elements";
+import { Icon, FormLabel, FormInput, Button, List, ListItem, Divider, Card } from "react-native-elements";
 import { connect } from "react-redux";
 import { 
   usersFetch, 
@@ -62,7 +62,7 @@ class StatusScreen extends Component {
     // nextProps are the next set of props that this component
     // will be rendered with
     // this.props is still the old set of props
-    console.log("Testing next props: " + nextProps);
+    //console.log("Testing next props: " + nextProps);
     this.createDataSource(nextProps);
 
   }
@@ -79,10 +79,10 @@ class StatusScreen extends Component {
 
   //////////////////////////////////////////////////////////////////////////////////
   // Handler for the serach button
-  onButtonPress = () => {
+  onButtonPress = (user) => {
 
-    console.log("button pressed!");
-    
+    console.log('button pressed!');
+    this.props.navigation.navigate('userDescription', { user });
     //this.props.fetchPlaces(this.state.place, this.state.location, () => {
       //this.props.navigation.navigate("searchResults"); // Passing a callback function
     //});
@@ -103,7 +103,6 @@ class StatusScreen extends Component {
           enableEmptySections
           renderRow={this.renderHumanRow}
           dataSource={this.dataSource}
-          
         />
         <Text h1 style={{ textAlign: "center", marginTop: 10 }}>
           Zombies: {this.props.zombieCount}
@@ -128,12 +127,12 @@ class StatusScreen extends Component {
   }
 
   renderHumanRow = (user , sectionID) => {
-    //console.log('Section ID: ' + sectionID);
+    //console.log('Section ID: ' + rowID);
     //console.log("User Data: ")
     //console.log(user);
     //console.log(fName);
     //console.log("in renderRow");
-    const { fName, lname, status } = user;
+    const { fName, lname, status, userPhoto } = user;
 
 
     // if status === alpha || human
@@ -150,7 +149,11 @@ class StatusScreen extends Component {
                 key={sectionID}
                 title={fName + " " + lname}
                 subtitle='Human'
-                //onPress={this.onButtonPress}
+                onPressRightIcon={(event) => {
+                  const { navigate } = this.props.navigation;
+                  navigate('userDescription', { user: user });
+                }}
+                avatar={{uri: userPhoto}}                
               />
     )}
     return null;
@@ -177,8 +180,9 @@ class StatusScreen extends Component {
                 key={sectionID}
                 title={fName + " " + lname}
                 subtitle='Zombie'
-                onPress={this.onButtonPress}
+                onPressRightIcon={this.onButtonPress}
               />
+
     )}
     return null;
   }
@@ -213,8 +217,6 @@ class StatusScreen extends Component {
 }
 
 function mapStateToProps({ users }){
-  console.log("what is users: ");
-  console.log(users);
   return {
     humanCount: users.humanCount,
     alphaCount: users.alphaCount,

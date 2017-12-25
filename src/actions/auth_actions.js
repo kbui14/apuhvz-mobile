@@ -152,12 +152,13 @@ const finishSignupSuccess = (dispatch, userAtt) => {
 export const finishSignup = (fName, lname, livingArea, alpha, profilePic, agreed) => async dispatch => {
   console.log('in finishSignUp');
   var pid = '',
-      status = 'Human';
+      status = 'Human',
       isVerified = false,
       vaccines = 0,
       missions = 0,
       auxMissions = 0,
-      timer = Date.now()
+      timer = Date.now(),
+      userPhoto = 'https://i.imgur.com/IMGQHOa.jpg'
 
       console.log('timer: ' + timer);
 
@@ -216,7 +217,7 @@ export const finishSignup = (fName, lname, livingArea, alpha, profilePic, agreed
 
     var userID = currentUser.uid;
     firebase.database().ref(`/users/`)
-      .push({ fName, lname, livingArea, alpha, profilePic, agreed, pid, status, isVerified, vaccines, missions, auxMissions, timer, userID })
+      .push({ fName, lname, livingArea, alpha, userPhoto, agreed, pid, status, isVerified, vaccines, missions, auxMissions, timer, userID })
       .then(() => {
         console.log('Dispatched user attributes: ' + dispatch + '    ');
       });
