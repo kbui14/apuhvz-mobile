@@ -217,7 +217,23 @@ export const finishSignup = (fName, lname, livingArea, alpha, profilePic, agreed
 
     var userID = currentUser.uid;
     firebase.database().ref(`/users/`)
-      .push({ fName, lname, livingArea, alpha, userPhoto, agreed, pid, status, isVerified, vaccines, missions, auxMissions, timer, userID })
+      .child(pid)
+      .set({
+        fName: fName,
+        lname: lname,
+        livingArea: livingArea,
+        alpha: alpha,
+        userPhoto: userPhoto,
+        agreed: agreed,
+        pid: pid,
+        status: status,
+        isVerified: isVerified,
+        vaccines: vaccines,
+        missions: missions,
+        auxMissions: auxMissions,
+        timer: timer,
+        userID: userID
+      })
       .then(() => {
         console.log('Dispatched user attributes: ' + dispatch + '    ');
       });

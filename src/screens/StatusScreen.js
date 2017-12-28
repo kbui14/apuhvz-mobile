@@ -176,11 +176,14 @@ class StatusScreen extends Component {
     if (status === 'Zombie'){
 
       return (<ListItem
-                roundAvatar
-                key={sectionID}
-                title={fName + " " + lname}
-                subtitle='Zombie'
-                onPressRightIcon={this.onButtonPress}
+        roundAvatar
+        key={sectionID}
+        title={fName + " " + lname}
+        subtitle='Zombie'
+        onPressRightIcon={(event) => {
+          const { navigate } = this.props.navigation;
+          navigate('userDescription', { user: user });
+        }}
               />
 
     )}
@@ -194,11 +197,14 @@ class StatusScreen extends Component {
     if (status === 'Dead'){
 
       return (<ListItem
-                roundAvatar
-                key={sectionID}
-                title={fName + " " + lname}
-                subtitle='Dead'
-                onPress={this.onButtonPress}
+        roundAvatar
+        key={sectionID}
+        title={fName + " " + lname}
+        subtitle='Dead'
+        onPressRightIcon={(event) => {
+          const { navigate } = this.props.navigation;
+          navigate('userDescription', { user: user });
+        }}
               />
     )}
     return null;
