@@ -2,8 +2,9 @@ import React, { Component } from "react";
 import { View, Text } from "react-native";
 import { Icon, FormLabel, FormInput, Button } from "react-native-elements";
 import { connect } from "react-redux";
-import * as actions from "../actions";
-
+import { 
+  enterKill
+} from "../actions";
 import { PRIMARY_COLOR } from "../constants/style";
 
 class EnterKillScreen extends Component {
@@ -45,7 +46,7 @@ class EnterKillScreen extends Component {
   //////////////////////////////////////////////////////////////////////////////////
   // Handler for the serach button
   onButtonPress = () => {
-
+    this.props.enterKill();
 
 
     //this.props.fetchPlaces(this.state.place, this.state.location, () => {
@@ -61,10 +62,18 @@ class EnterKillScreen extends Component {
         <Text>
           Enter Kill Page... Coming soon!
         </Text>
-
+        <Button 
+        title='Kill Player'
+        onPress={this.onButtonPress}
+        backgroundColor={PRIMARY_COLOR}
+        />
       </View>
     );
   }
 }
 
-export default connect(null, actions)(EnterKillScreen);
+const mapStateToProps = (state) => {
+  return {};
+}
+
+export default connect(mapStateToProps, {enterKill})(EnterKillScreen);

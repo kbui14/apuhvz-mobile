@@ -24,7 +24,7 @@ export const humanUsersCountFetch = () => {
 };
 
 ////////////////////////////////////////
-////  Getting Human users count
+////  Getting Alpha users count
 ////
 export const alphaUsersCountFetch = () => {
   var count = 0;
@@ -60,6 +60,9 @@ export const deadUsersCountFetch = () => {
   };
 };
 
+////////////////////////////////////////
+////  Getting user data
+////
 export const usersFetch = () => {
   return (dispatch) => {
     firebase.database().ref(`users/`)
@@ -69,5 +72,18 @@ export const usersFetch = () => {
         //console.log("numChildren: " + snapshot.numChildren());
         dispatch({ type: USER_FETCH_SUCCESS, payload: snapshot.val() });
       });
+  };
+};
+
+////////////////////////////////////////
+////  Enter Kill query
+////
+
+export const enterKill = () => {
+  return () => {
+    firebase.database().ref().child('users/ujfjq1').on('value', snapshot =>{
+      snapshot.ref.update({ status: "Zombie"})
+      console.log('Killed the player');
+    });
   };
 };
