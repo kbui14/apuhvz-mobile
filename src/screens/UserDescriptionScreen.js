@@ -63,7 +63,16 @@ class UserDescriptionScreen extends Component {
         Living Area: {user.livingArea}
       </Text>
       </Card>
-    )}else{
+    )}else if(user.status ==='Moderator'){
+      return(
+        <Card
+          title={user.status}
+          image={{uri: user.userPhoto}}
+          imageStyle={{width:300, height: 300, alignSelf: 'center'}}
+        >
+        </Card>
+      )}
+    else{
       return(
           <Card
             title={user.status}
