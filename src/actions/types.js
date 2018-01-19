@@ -30,3 +30,4 @@ export const USER_HUMAN_FETCH_SUCCESS = 'user_human_fetch_success';
 export const USER_ALPHA_FETCH_SUCCESS = 'user_alpha_fetch_success';
 export const USER_ZOMBIE_FETCH_SUCCESS = 'user_zombie_fetch_success';
 export const USER_DEAD_FETCH_SUCCESS = 'user_dead_fetch_success';
+export const USER_ON_TEXT_CHANGE = 'user_on_text_change';

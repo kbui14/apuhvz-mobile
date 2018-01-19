@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { View, Text, ListView } from "react-native";
+import { View, Text, ListView, ScrollView } from "react-native";
 import firebase from 'firebase';
 import { Icon, FormLabel, FormInput, Button, List, ListItem, Divider, Card } from "react-native-elements";
 import { connect } from "react-redux";
@@ -81,7 +81,7 @@ class StatusScreen extends Component {
   // Handler for the serach button
   onButtonPress = (user) => {
 
-    console.log('button pressed!');
+    //console.log('button pressed!');
     this.props.navigation.navigate('userDescription', { user });
     //this.props.fetchPlaces(this.state.place, this.state.location, () => {
       //this.props.navigation.navigate("searchResults"); // Passing a callback function
@@ -159,14 +159,14 @@ class StatusScreen extends Component {
     return null;
   }
 
-  renderZombieRow (user, sectionID){
+  renderZombieRow = (user, sectionID) => {
     //console.log('Section ID: ' + sectionID);
     //console.log("User Data: ")
     //console.log(this.props.humanCount);
     //console.log(user);
     //console.log(fName);
     //console.log("in renderRow");
-    const { fName, lname, status } = user;
+    const { fName, lname, status, userPhoto } = user;
 
 
     // if status === alpha || human
@@ -184,15 +184,16 @@ class StatusScreen extends Component {
           const { navigate } = this.props.navigation;
           navigate('userDescription', { user: user });
         }}
+        avatar={{uri: userPhoto}}                
               />
 
     )}
     return null;
   }
 
-  renderDeadRow (user, sectionID){
+  renderDeadRow = (user, sectionID) => {
 
-    const { fName, lname, status } = user;
+    const { fName, lname, status, userPhoto } = user;
 
     if (status === 'Dead'){
 
@@ -205,6 +206,7 @@ class StatusScreen extends Component {
           const { navigate } = this.props.navigation;
           navigate('userDescription', { user: user });
         }}
+        avatar={{uri: userPhoto}}                
               />
     )}
     return null;
@@ -216,7 +218,9 @@ class StatusScreen extends Component {
     //console.log(this.props.users.fName);
     return (
       <View>
+        <ScrollView>
         {this.renderContent()}
+        </ScrollView>
       </View>
     );
   }
