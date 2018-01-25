@@ -3,9 +3,11 @@ import { View, Text } from "react-native";
 import { Icon, FormLabel, FormInput, Button } from "react-native-elements";
 import { connect } from "react-redux";
 import { 
-  enterKill
+  enterKill,
+  onTextChange,
+  usersFetch
 } from "../actions";
-import { PRIMARY_COLOR } from "../constants/style";
+import { PRIMARY_COLOR, DARK_GREEN, SEAFOAM_COLOR } from "../constants/style";
 
 class EnterKillScreen extends Component {
   //////////////////////////////////////////////////////////////////////////////////
@@ -41,12 +43,14 @@ class EnterKillScreen extends Component {
     //this.setState({ place: "McDonalds" });
     //this.setState({ location: "Azusa, CA" });
     // Upon loading the app, load any static resources...
+    this.props.usersFetch();
   }
 
   //////////////////////////////////////////////////////////////////////////////////
   // Handler for the serach button
   onButtonPress = () => {
-    this.props.enterKill();
+    console.log('Testing the pid here')
+    this.props.enterKill(this.props.killCode);
 
 
     //this.props.fetchPlaces(this.state.place, this.state.location, () => {
@@ -54,26 +58,46 @@ class EnterKillScreen extends Component {
     //});
   };
 
+  onKillCodeTextChange = text => {
+    this.props.onTextChange(text);
+  };
+
+  renderContent(users){
+    return(
+      <View>
+      <FormLabel labelStyle={{color: DARK_GREEN}}>Enter Kill Code</FormLabel>
+      <FormInput
+        placeholder="2a5ji1"
+        placeholderTextColor={SEAFOAM_COLOR}
+        value={this.props.killCode}
+        onChangeText={this.onKillCodeTextChange}
+        style={{color : 'black', marginBottom: 10}}            
+      />
+    <Button 
+    title='Kill Player'
+    onPress={this.onButtonPress}
+    backgroundColor={PRIMARY_COLOR}
+    />
+    </View>
+    );
+  }
+
   //////////////////////////////////////////////////////////////////////////////////
   // Render method
   render() {
     return (
       <View>
-        <Text>
-          Enter Kill Page... Coming soon!
-        </Text>
-        <Button 
-        title='Kill Player'
-        onPress={this.onButtonPress}
-        backgroundColor={PRIMARY_COLOR}
-        />
+        {this.renderContent()}
       </View>
     );
   }
 }
 
-const mapStateToProps = (state) => {
-  return {};
+function mapStateToProps({ users }){
+  return {
+    killCode: users.killCode,
+    users: users.user
+  }
 }
 
-export default connect(mapStateToProps, {enterKill})(EnterKillScreen);
+export default connect(mapStateToProps, {enterKill, onTextChange, usersFetch})(EnterKillScreen);

@@ -3,7 +3,8 @@ import {
   USER_HUMAN_FETCH_SUCCESS,
   USER_ALPHA_FETCH_SUCCESS,
   USER_ZOMBIE_FETCH_SUCCESS,
-  USER_DEAD_FETCH_SUCCESS
+  USER_DEAD_FETCH_SUCCESS,
+  USER_ON_TEXT_CHANGE
 } from '../actions/types';
 
 const INITIAL_STATE = {
@@ -11,6 +12,7 @@ const INITIAL_STATE = {
   alphaCount: 0,
   zombieCount: 0,
   deadCount: 0,
+  killCode: '',
   user: {}
 };
 
@@ -29,6 +31,8 @@ export default (state = INITIAL_STATE, action) => {
     //console.log('in user_reducer');
     //console.log(action.payload);
       return { ...state, user: action.payload };
+    case USER_ON_TEXT_CHANGE:
+      return { ...state, killCode: action.payload};
     default:
       return state;
   }
