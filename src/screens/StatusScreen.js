@@ -166,7 +166,8 @@ class StatusScreen extends Component {
     //console.log(user);
     //console.log(fName);
     //console.log("in renderRow");
-    const { fName, lname, status, userPhoto } = user;
+    const { fName, lname, status, userPhoto, timer } = user;
+
 
 
     // if status === alpha || human

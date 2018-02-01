@@ -1,6 +1,6 @@
 import React, { Component } from "react";
-import { View, Text, WebView } from "react-native";
-import { Icon, FormLabel, FormInput, Button } from "react-native-elements";
+import { View, Text, WebView, Platform } from "react-native";
+import { Icon, FormLabel, FormInput, Button, Card } from "react-native-elements";
 import { connect } from "react-redux";
 import * as actions from "../actions";
 
@@ -62,9 +62,10 @@ class Home extends Component {
           javaScriptEnabled={true}
           domStorageEnabled={true}
           source={{uri: 'https://www.youtube.com/embed/rUu--x0Y6Z0' }}
+          style={{flex:1, width: 350, height: 250, alignSelf: 'center'}}
         />
 
-        <Text style={{ color: 'white', fontFamily: 'Helvetica', fontSize: 20}}>
+        <Text style={{ color: 'white', fontFamily: Platform.OS === 'ios' ?'Helvetica' : 'Roboto', fontSize: 20, margin: 10}}>
           APU HVZ is a game where friendships are made and the APU community grows.  
           This game is student run and organized for you.  
           The Moderators that run the APU HVZ game put in their own time to make 

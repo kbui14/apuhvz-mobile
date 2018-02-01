@@ -72,6 +72,35 @@ class UserDescriptionScreen extends Component {
         >
         </Card>
       )}
+      else if(user.status === 'Zombie'){
+        var currentDate = new Date();
+        var lastFeed = new Date(user.timer);
+        var difference = currentDate - lastFeed;
+    
+        var secDiff = difference / 1000;
+        var minDiff = difference / 60 / 1000;
+        var hourDiff = difference / 3600 / 1000;
+        var readHour = Math.floor(hourDiff);
+        var readMin = Math.floor(minDiff - 60 * readHour);
+
+        console.log("This person's timer");
+        console.log((23-readHour) + ":" + (60-readMin));
+        var timerString = (23-readHour) + ":" + (60-readMin);
+        return(
+          <Card
+            title={user.status}
+            image={{uri: user.userPhoto}}
+            imageStyle={{width:300, height: 300, alignSelf: 'center'}}
+          >
+          <Text style={{alignSelf:'center', margin: 10}}>
+            Living Area: {user.livingArea}
+          </Text>
+          <Text style={{alignSelf:'center', margin: 10}}>
+            Timer: {timerString} 
+          </Text>
+          </Card>
+        )
+      }
     else{
       return(
           <Card
